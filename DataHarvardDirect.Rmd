@@ -1,0 +1,55 @@
+---
+title: "Carolina Data Challenge 2022"
+author: "Andy Dong"
+date: '2022-10-08'
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r setup, include=T}
+library(tidytext)
+library(tidyverse)
+library(readr)
+library(rtweet)
+library(rvest)
+library(twitteR)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(curl)
+library(httpuv)
+library(rjson)
+library(jsonlite)
+```
+
+## Including Plots
+
+/What is the significance of the tweets over the years and how many of these tweets are rambles versus professional tweets
+
+/format:
+- introduce: Why twitter matters (Public Opinion, kind of like newspaper)
+- generic goal
+- 
+
+```{r, include = F}
+data1 <- jsonlite::stream_in(file( "/Users/andydong/Downloads/dataverse_files/climate_id.jsonl"))
+
+```
+```{r, include = T}
+data2<-
+  data1 %>%
+  rename(Tweets = id_str) %>%
+  select(-c(id))
+data2
+```
+```{r, include = T}
+data3 <-
+  data2 %>%
+  filter(retweet_count >= 500)
+```
+
+```{r, include = T}
+ggplot(data = data3, mapping = aes(x = created_at, y= retweet_count))+
+  geom_line() + labs(x = "Month", "Retweets")
+```
+
