@@ -1,0 +1,52 @@
+---
+title: "Analysis of Data"
+author: "Lasya Kambhampati"
+date: "2022-10-09"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+library(rjson)
+library(jsonlite)
+library(tidytext)
+library(tidyverse)
+library(readr)
+library(rtweet)
+library(rvest)
+library(twitteR)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(curl)
+library(httpuv)
+```
+
+```{r}
+result <- jsonlite::stream_in(file("/Users/lasyakambhampati/Downloads/climate_id.jsonl"))
+result <- as.data.frame(result)
+```
+```{r}
+  result1<- 
+    result %>%
+    rename(Tweets = id_str) %>%
+    select(-c(id))
+  result1
+    
+```
+
+```{r}
+result2<- 
+  result1%>%
+  filter(retweet_count >= 500)
+result2
+```
+```{r}
+ggplot(data = result2, mapping = aes(x = created_at, y = retweet_count)) + geom_line(color = "blue")+
+  labs(x = 'Time', y = 'Retweet Count')
+  
+
+```
+
+
