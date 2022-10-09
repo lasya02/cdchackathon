@@ -1,0 +1,99 @@
+---
+title: "CarolinaDataChallenge"
+author: "Andy Dong"
+date: '2022-10-08'
+output: html_document
+---
+
+```{r setup, include=T}
+library(tidytext)
+library(tidyverse)
+library(readr)
+library(rtweet)
+library(rvest)
+library(twitteR)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(curl)
+library(httpuv)
+library(rjson)
+library(jsonlite)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r,eval=T,warning=F, echo = T}
+consumer_key <- "6PzrN12b8KmPahYtfEPJRUCwZ"
+consumer_secret <- "YIDv3gO3x96Nh3A9sU0uF1nEEnZcPH6Si3mytHjPv1rRZElPxe"
+access_token <- "1578776431806464000-VcdNWX46GCo2a6HCOsX8GSMmusWRJv"
+access_secret <- "EZHvqEd8Ddy4xYOITcqFHEIFXJgySAv2MOgqTpcZIolO0"
+```
+
+```{r,eval=T,warning=F, echo = T}
+name <- "Twitter"
+key <- "6PzrN12b8KmPahYtfEPJRUCwZ"
+secret <- "YIDv3gO3x96Nh3A9sU0uF1nEEnZcPH6Si3mytHjPv1rRZElPxe"
+```
+
+```{r,eval=T,warning=F, echo = T, include= T}
+auth_setup_default()
+newtoken <- create_token(
+  name,
+  consumer_key,
+  consumer_secret,
+  access_token,
+  access_secret
+)
+```
+
+
+```{r,eval=T,warning=F, echo = T}
+climate_tweets <- search_tweets("Climate Change Hurricane Ian", n=18000, retryonratelimit = TRUE)
+```
+
+```{r,eval=T,warning=F, echo = T}
+climate_tweets <- select(climate_tweets, -c(favorited_by:possibly_sensitive_appealable))
+climate_tweets <- select(climate_tweets, -c(geo,contributors))
+climate_tweets
+```
+
+```{r,eval=T,warning=F, echo = T}
+climate_tweets <-
+  climate_tweets %>%
+  rename(Tweets = id_str) %>%
+  select(-c(id))
+climate_tweets
+```
+//number of tweets per day
+
+```{r,eval=T,warning=F, echo = T}
+ggplot(data = climate_tweets, mapping = aes(x=created_at, y= retweet_count)) + geom_smooth(se=FALSE)+ labs(x= "Date", y= "Retweets")
+```
+```{r,eval=T,warning=F, echo = T, include = F}
+tweepy = search_users("Climate Change", n = 500)
+length(unique(tweepy$location))
+
+tweepy %>% 
+  ggplot(aes(location)) + 
+  geom_bar() + coord_flip() +
+  labs(x = "Number",
+       y = "Location",
+       title = "Unique Twitter User Locations")
+```
+```{r,eval=T,warning=F, echo = T}
+tweepy %>% 
+  count(location, sort = TRUE) %>%
+  mutate(location = reorder(location,n))%>%
+  top_n(20) %>%
+  ggplot(aes(x=location, y= n)) +
+  geom_col(fill = "dark green")+
+  coord_flip()+
+  labs(x = "Location", y = "Count",
+       title = "Twitter User Locations")
+```
+
+
+
